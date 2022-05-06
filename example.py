@@ -1,34 +1,40 @@
 from slitherio.Slitherio import Slitherio
 from slitherio.Bot import Bot
+from slitherio.Actions import *
 
+from random import random
 
 
 class SillyBot(Bot):
-    def __init__(self, game, username):
-        super().__init__(game, username)
-        
-        self.turbo(30)
+    def setup(self):
+        self.act(TURBO, 10)
 
-    def logic(self):
-        self.turn_left(0.1)
+    def loop(self):
+        choice = random()
+        if choice < 0.025:
+            self.act(TURN_RIGHT, INDEFINITELY)
+            self.stop_action(TURN_LEFT)
+        elif choice < 0.05:
+            self.act(TURN_LEFT, INDEFINITELY)
+            self.stop_action(TURN_RIGHT)
+        if self.score > 50:
+            self.act(TURBO, 10)
+        elif self.score < 30:
+            self.stop_action(TURBO)
 
 
-
-game = Slitherio(
-    maximize=False,
-    headless=False
+slitherio = Slitherio(
+    bot=SillyBot,
+    username='worm',
+    headless=False,
+    maximize=False
     )
 
-bot = SillyBot(
-    game=game,
-    username='username',
-    )
 
 for i in range(2):
-    game.new_game(username=bot.username)
+    slitherio.new_game()
 
-    while game.running():
-        game.update()
-        bot.update()
+    while slitherio.running():
+        slitherio.update()
 
-game.close()
+slitherio.close()
